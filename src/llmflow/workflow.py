@@ -8,6 +8,7 @@ import yaml
 from pydantic import BaseModel, ValidationError, field_validator, model_validator
 
 from .errors import WorkflowLoadError, WorkflowValidationError
+from .graph import build_graph, Graph
 from .hashing import sha256_text
 
 
@@ -144,6 +145,9 @@ class Workflow:
             path=workflow_path,
             workflow_hash=sha256_text(raw_text),
         )
+
+    def graph(self) -> Graph:
+        return build_graph(self.spec.steps)
 
 
 def _resolve_prompt_paths(payload: dict[str, Any], base_dir: Path) -> dict[str, Any]:

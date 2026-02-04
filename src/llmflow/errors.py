@@ -8,3 +8,15 @@ class WorkflowLoadError(WorkflowError):
 
 class WorkflowValidationError(WorkflowError):
     """Raised when workflow content fails schema validation."""
+
+
+class GraphError(Exception):
+    """Base error for graph construction and ordering."""
+
+
+class GraphDependencyError(GraphError):
+    """Raised when a step depends on an unknown step."""
+
+
+class GraphCycleError(GraphError):
+    """Raised when a cycle is detected in the workflow graph."""
