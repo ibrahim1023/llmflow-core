@@ -20,3 +20,15 @@ class GraphDependencyError(GraphError):
 
 class GraphCycleError(GraphError):
     """Raised when a cycle is detected in the workflow graph."""
+
+
+class RegistryError(Exception):
+    """Base error for registry operations."""
+
+
+class StepRegistrationError(RegistryError):
+    """Raised when a step type registration is invalid."""
+
+
+class StepNotFoundError(RegistryError):
+    """Raised when a step type is not registered."""
