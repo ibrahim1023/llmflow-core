@@ -32,3 +32,7 @@ class StepRegistrationError(RegistryError):
 
 class StepNotFoundError(RegistryError):
     """Raised when a step type is not registered."""
+
+
+class ProviderError(Exception):
+    """Base error for provider operations."""

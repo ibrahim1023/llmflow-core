@@ -26,3 +26,5 @@ This section will document the run directory structure and metadata fields.
 
 ## Extension points (placeholder)
 This section will document providers, tools, and validators.
+Provider adapters are defined via a small `Provider` interface with
+typed request/response models, plus a deterministic `MockProvider` for tests.
