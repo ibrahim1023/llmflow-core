@@ -2,7 +2,7 @@
 
 from .providers import Provider, ProviderMessage, ProviderRequest, ProviderResponse, ProviderUsage
 from .registry import StepRegistry
-from .steps import Step
+from .steps import LLMStep, Step
 from .workflow import InputDef, StepDef, Workflow, WorkflowMeta, WorkflowSpec
 
 __all__ = [
@@ -12,6 +12,7 @@ __all__ = [
     "ProviderRequest",
     "ProviderResponse",
     "ProviderUsage",
+    "LLMStep",
     "Step",
     "StepDef",
     "StepRegistry",

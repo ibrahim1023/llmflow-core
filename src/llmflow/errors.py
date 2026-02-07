@@ -36,3 +36,23 @@ class StepNotFoundError(RegistryError):
 
 class ProviderError(Exception):
     """Base error for provider operations."""
+
+
+class StepExecutionError(Exception):
+    """Base error for step execution failures."""
+
+
+class LLMConfigError(StepExecutionError):
+    """Raised when LLM step configuration is missing or invalid."""
+
+
+class LLMRenderError(StepExecutionError):
+    """Raised when an LLM prompt template fails to render."""
+
+
+class LLMOutputSchemaError(StepExecutionError):
+    """Raised when an LLM output schema cannot be loaded or parsed."""
+
+
+class LLMOutputValidationError(StepExecutionError):
+    """Raised when an LLM output fails JSON schema validation."""

@@ -28,3 +28,5 @@ This section will document the run directory structure and metadata fields.
 This section will document providers, tools, and validators.
 Provider adapters are defined via a small `Provider` interface with
 typed request/response models, plus a deterministic `MockProvider` for tests.
+LLM steps render Jinja prompts and validate JSON outputs against draft-07
+schemas before returning results.

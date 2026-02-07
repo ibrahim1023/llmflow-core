@@ -1,3 +1,4 @@
 from .base import Step
+from .llm import LLMStep
 
-__all__ = ["Step"]
+__all__ = ["LLMStep", "Step"]
