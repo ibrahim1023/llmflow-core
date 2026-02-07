@@ -108,3 +108,6 @@ class ValidatorRegistry:
         if result is False:
             raise ValidationRuleError(
                 f"validator '{name}' returned False")
+        if result is not None and result is not True:
+            raise ValidationRuleError(
+                f"validator '{name}' must return True, False, or None")

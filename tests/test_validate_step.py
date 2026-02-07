@@ -37,3 +37,22 @@ def test_validate_step_custom_validator_failure() -> None:
 
     with pytest.raises(ValidationRuleError):
         step.execute({"name": "test"})
+
+
+def test_validate_step_validator_returns_invalid_type() -> None:
+    def bad_validator(_: dict) -> str:
+        return "nope"
+
+    validators = ValidatorRegistry()
+    validators.register("bad", bad_validator)
+
+    step_def = StepDef(
+        id="validate",
+        type="validate",
+        validate={"validators": ["bad"]},
+    )
+
+    step = ValidateStep(step_def, validators=validators)
+
+    with pytest.raises(ValidationRuleError):
+        step.execute({"name": "ok"})

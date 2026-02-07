@@ -58,10 +58,10 @@ class StepToolConfig(BaseModel):
 class StepValidateConfig(BaseModel):
     model_config = {"extra": "forbid"}
 
-    required: list[str] = []
-    non_empty: list[str] = []
-    allowed_values: dict[str, list[Any]] = {}
-    validators: list[str] = []
+    required: list[str] = Field(default_factory=list)
+    non_empty: list[str] = Field(default_factory=list)
+    allowed_values: dict[str, list[Any]] = Field(default_factory=dict)
+    validators: list[str] = Field(default_factory=list)
 
     @field_validator("required", "non_empty", "validators", mode="before")
     @classmethod
