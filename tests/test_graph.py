@@ -12,6 +12,7 @@ def _step(step_id: str, *, depends_on: list[str] | None = None) -> StepDef:
         id=step_id,
         type="tool",
         depends_on=depends_on or [],
+        tool={"name": "noop"},
     )
 
 

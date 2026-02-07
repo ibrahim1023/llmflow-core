@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import BaseModel, ValidationError, field_validator, model_validator
+from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from .errors import WorkflowLoadError, WorkflowValidationError
 from .graph import build_graph, Graph
@@ -41,13 +41,58 @@ class StepLLMConfig(BaseModel):
     model_config = {"extra": "allow"}
 
 
+class StepToolConfig(BaseModel):
+    model_config = {"extra": "forbid"}
+
+    name: str
+
+    @field_validator("name")
+    @classmethod
+    def _non_empty(cls, value: str) -> str:
+        value = str(value).strip()
+        if not value:
+            raise ValueError("must be non-empty")
+        return value
+
+
+class StepValidateConfig(BaseModel):
+    model_config = {"extra": "forbid"}
+
+    required: list[str] = []
+    non_empty: list[str] = []
+    allowed_values: dict[str, list[Any]] = {}
+    validators: list[str] = []
+
+    @field_validator("required", "non_empty", "validators", mode="before")
+    @classmethod
+    def _ensure_list(cls, value: Any) -> list[str]:
+        if value is None:
+            return []
+        if isinstance(value, list):
+            return value
+        raise ValueError("must be a list of strings")
+
+    @field_validator("allowed_values", mode="before")
+    @classmethod
+    def _ensure_mapping(cls, value: Any) -> dict[str, list[Any]]:
+        if value is None:
+            return {}
+        if isinstance(value, dict):
+            return value
+        raise ValueError("must be a mapping of field to allowed values")
+
+
 class StepDef(BaseModel):
+    model_config = {"populate_by_name": True, "protected_namespaces": ()}
+
     id: str
     type: str
     depends_on: list[str] = []
     prompt: str | None = None
     output_schema: str | None = None
     llm: StepLLMConfig | None = None
+    tool: StepToolConfig | None = None
+    validate_config: StepValidateConfig | None = Field(default=None, alias="validate")
 
     @field_validator("id", "type")
     @classmethod
@@ -73,6 +118,16 @@ class StepDef(BaseModel):
                 raise ValueError("llm steps require 'prompt'")
             if not self.output_schema:
                 raise ValueError("llm steps require 'output_schema'")
+        if self.type == "tool":
+            if not self.tool:
+                raise ValueError("tool steps require 'tool'")
+            if self.llm or self.validate_config:
+                raise ValueError("tool steps cannot set 'llm' or 'validate'")
+        if self.type == "validate":
+            if not self.validate_config:
+                raise ValueError("validate steps require 'validate'")
+            if self.llm or self.tool:
+                raise ValueError("validate steps cannot set 'llm' or 'tool'")
         return self
 
 

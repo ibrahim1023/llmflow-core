@@ -56,3 +56,35 @@ class LLMOutputSchemaError(StepExecutionError):
 
 class LLMOutputValidationError(StepExecutionError):
     """Raised when an LLM output fails JSON schema validation."""
+
+
+class ToolError(Exception):
+    """Base error for tool registry and execution."""
+
+
+class ToolRegistrationError(ToolError):
+    """Raised when a tool registration is invalid."""
+
+
+class ToolNotFoundError(ToolError):
+    """Raised when a tool name is not registered."""
+
+
+class ToolExecutionError(StepExecutionError):
+    """Raised when a tool step fails to execute."""
+
+
+class ValidatorError(Exception):
+    """Base error for validator registry operations."""
+
+
+class ValidatorRegistrationError(ValidatorError):
+    """Raised when a validator registration is invalid."""
+
+
+class ValidatorNotFoundError(ValidatorError):
+    """Raised when a validator name is not registered."""
+
+
+class ValidationRuleError(StepExecutionError):
+    """Raised when a validation rule fails."""

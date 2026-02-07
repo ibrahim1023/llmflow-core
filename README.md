@@ -30,3 +30,5 @@ Provider adapters are defined via a small `Provider` interface with
 typed request/response models, plus a deterministic `MockProvider` for tests.
 LLM steps render Jinja prompts and validate JSON outputs against draft-07
 schemas before returning results.
+Tool steps call registered Python functions, and validate steps apply simple
+rules plus optional custom validators.
