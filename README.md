@@ -28,17 +28,26 @@ and deterministic run traces.
 
 ## Installation
 
+Install from PyPI:
+
+```bash
+python -m pip install llmflow-core
+```
+
+Install from source (editable):
+
 ```bash
 python -m pip install -e .
 ```
 
-Install with test dependencies:
+Install from source with test dependencies:
 
 ```bash
 python -m pip install -e .[dev]
 ```
 
 ## Quickstart
+
 ### 1) Run with Python API
 
 ```python
@@ -130,6 +139,7 @@ The end-to-end deterministic example run is validated by:
 - `tests/test_examples_blog_pipeline.py`
 
 ## Workflow YAML format
+
 Minimal shape:
 
 ```yaml
@@ -166,6 +176,7 @@ outputs:
 ```
 
 Rules:
+
 - `workflow.name` and `workflow.version` are required.
 - `inputs` is a mapping of input names to type declarations.
 - Each step needs a unique `id` and `type`.
@@ -231,6 +242,7 @@ Typical step artifacts:
 ## Extending the engine
 
 ### Providers
+
 Implement `Provider.call(request) -> ProviderResponse` and pass the provider to
 `Runner`.
 
@@ -248,6 +260,7 @@ class StaticProvider(Provider):
 ```
 
 ### Tools
+
 Register Python functions in `ToolRegistry`. Tool functions accept merged step
 inputs and must return a `dict`.
 
@@ -259,6 +272,7 @@ tools.register("summarize_topic", lambda inputs: {"topic_slug": inputs["topic"].
 ```
 
 ### Validators
+
 Register custom validators in `ValidatorRegistry`. Validator functions accept
 merged step inputs and should return `True`/`None` on success, or `False` on
 failure.
@@ -271,6 +285,7 @@ validators.register("has_summary", lambda inputs: bool(inputs.get("summary")))
 ```
 
 ### Custom steps
+
 Register custom step classes in `StepRegistry` when you need a new execution
 primitive beyond `llm`, `tool`, and `validate`.
 
@@ -300,6 +315,28 @@ Run a local command equivalent to CI:
 python -m pip install -e .[dev]
 pytest --cov=llmflow --cov-report=term-missing
 ```
+
+## Release
+
+Production release workflow:
+
+- `.github/workflows/publish-pypi.yml`
+
+Pre-release validation workflow:
+
+- `.github/workflows/publish-testpypi.yml`
+
+Release process:
+
+1. Bump `version` in `pyproject.toml`.
+2. Commit and push to `main`.
+3. Publish to TestPyPI (optional preflight).
+4. Publish to PyPI by creating a GitHub release or running the workflow manually.
+
+Package pages:
+
+- PyPI: `https://pypi.org/project/llmflow-core/`
+- TestPyPI: `https://test.pypi.org/project/llmflow-core/`
 
 ## Current status
 
