@@ -31,6 +31,23 @@ dev = [
 [project.scripts]
 llmflow = "llmflow.cli:app"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/llmflow"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/llmflow",
+  "README.md",
+  "pyproject.toml",
+  "requirements.txt",
+  "scope.md",
+  "task.md",
+  "info.md",
+  "context.md",
+  "examples",
+  "tests",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
