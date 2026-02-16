@@ -38,6 +38,20 @@ result = replay(
 print(result.outputs)
 ```
 
+## CLI
+The CLI is a thin wrapper around the library API. It uses the deterministic
+mock provider and requires a JSON object for LLM outputs.
+
+```bash
+llmflow run examples/blog_pipeline/workflow.yaml \
+  --input topic="Deterministic AI" \
+  --input audience="Engineering managers" \
+  --mock-output '{"outline":"..."}'
+
+llmflow graph examples/blog_pipeline/workflow.yaml
+llmflow replay .runs/run_YYYYMMDD_HHMMSS_<shortid>
+```
+
 ## Example workflow (placeholder)
 This section will show a minimal YAML workflow, prompt files, and schema.
 
