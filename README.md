@@ -9,13 +9,19 @@ auditable workflows with deterministic execution and replayable artifacts.
 
 ## Quickstart (placeholder)
 - Install: `pip install llmflow-core`
-- Load a workflow file (execution coming in later phases).
+- Load and run a workflow file.
 
 ```python
-from llmflow import Workflow
+from llmflow import MockProvider, RunConfig, Runner, Workflow
 
 workflow = Workflow.load("examples/blog_pipeline/workflow.yaml")
-print(workflow.spec.workflow.name)
+
+runner = Runner(
+    provider=MockProvider(default_output="{}"),
+    config=RunConfig(artifacts_dir=".runs", provider_name="mock"),
+)
+result = runner.run(workflow, inputs={"topic": "Deterministic AI", "audience": "EMs"})
+print(result.outputs)
 ```
 
 ## Example workflow (placeholder)
