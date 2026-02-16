@@ -230,12 +230,49 @@ Typical step artifacts:
 
 ## Extending the engine
 
-Extension points:
+### Providers
+Implement `Provider.call(request) -> ProviderResponse` and pass the provider to
+`Runner`.
 
-- Providers: implement `Provider.call(request) -> ProviderResponse`
-- Tools: register Python callables in `ToolRegistry`
-- Validators: register custom checks in `ValidatorRegistry`
-- Steps: register new step implementations in `StepRegistry`
+```python
+from llmflow.providers import Provider, ProviderRequest, ProviderResponse
+
+
+class StaticProvider(Provider):
+    def call(self, request: ProviderRequest) -> ProviderResponse:
+        return ProviderResponse(
+            model=request.model,
+            output_text='{"title":"Draft","summary":"S","body":"B"}',
+            raw={"provider": "static"},
+        )
+```
+
+### Tools
+Register Python functions in `ToolRegistry`. Tool functions accept merged step
+inputs and must return a `dict`.
+
+```python
+from llmflow.registry import ToolRegistry
+
+tools = ToolRegistry()
+tools.register("summarize_topic", lambda inputs: {"topic_slug": inputs["topic"].lower()})
+```
+
+### Validators
+Register custom validators in `ValidatorRegistry`. Validator functions accept
+merged step inputs and should return `True`/`None` on success, or `False` on
+failure.
+
+```python
+from llmflow.registry import ValidatorRegistry
+
+validators = ValidatorRegistry()
+validators.register("has_summary", lambda inputs: bool(inputs.get("summary")))
+```
+
+### Custom steps
+Register custom step classes in `StepRegistry` when you need a new execution
+primitive beyond `llm`, `tool`, and `validate`.
 
 ## Testing
 
