@@ -9,14 +9,16 @@ from .runner import RunResult
 from .workflow import Workflow
 
 
-def replay(run_dir: str | Path) -> RunResult:
+def replay(run_dir: str | Path, *, workflow_path: str | Path | None = None) -> RunResult:
     run_path = Path(run_dir)
     if not run_path.exists():
         raise ReplayError(f"run directory not found: {run_path}")
 
     metadata = _load_json(run_path / "metadata.json")
-    workflow_path = _workflow_path(metadata)
-    workflow = Workflow.load(workflow_path)
+    resolved_workflow_path = (
+        workflow_path if workflow_path is not None else _workflow_path(metadata)
+    )
+    workflow = _load_workflow(resolved_workflow_path)
 
     execution_order = metadata.get("execution_order")
     if not isinstance(execution_order, list) or not execution_order:
@@ -42,6 +44,16 @@ def _workflow_path(metadata: dict[str, Any]) -> str:
     if not isinstance(path, str) or not path.strip():
         raise ReplayError("metadata workflow.path is missing or invalid")
     return path
+
+
+def _load_workflow(path: str | Path) -> Workflow:
+    workflow_path = Path(path)
+    if not workflow_path.exists():
+        raise ReplayError(
+            "workflow path from metadata does not exist; "
+            "pass workflow_path to replay()"
+        )
+    return Workflow.load(workflow_path)
 
 
 def _load_step_output(run_path: Path, step_id: str) -> dict[str, Any]:

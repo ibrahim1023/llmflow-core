@@ -75,3 +75,15 @@ def test_replay_detects_output_mismatch(tmp_path) -> None:
 
     with pytest.raises(ReplayError):
         replay(run_dir)
+
+
+def test_replay_allows_workflow_override(tmp_path) -> None:
+    run_dir = _run_workflow(tmp_path)
+    metadata_path = Path(run_dir) / "metadata.json"
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    metadata["workflow"]["path"] = str(tmp_path / "missing.yaml")
+    metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
+
+    result = replay(run_dir, workflow_path=tmp_path / "workflow.yaml")
+
+    assert result.outputs == {"result": {"value": "Testing"}}

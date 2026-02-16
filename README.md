@@ -31,6 +31,10 @@ Replay verifies recorded outputs without re-running providers:
 from llmflow import replay
 
 result = replay(".runs/run_YYYYMMDD_HHMMSS_<shortid>")
+result = replay(
+    ".runs/run_YYYYMMDD_HHMMSS_<shortid>",
+    workflow_path="examples/blog_pipeline/workflow.yaml",
+)
 print(result.outputs)
 ```
 
