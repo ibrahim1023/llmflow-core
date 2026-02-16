@@ -66,3 +66,33 @@ def test_runner_requires_inputs(tmp_path) -> None:
 
     with pytest.raises(StepExecutionError):
         runner.run(workflow, inputs={})
+
+
+def test_runner_writes_error_artifacts_on_step_failure(tmp_path) -> None:
+    workflow = _build_workflow(tmp_path)
+    tools = ToolRegistry()
+
+    def _boom(_: dict[str, object]) -> dict[str, object]:
+        raise ValueError("boom")
+
+    tools.register("echo", _boom)
+
+    runner = Runner(
+        provider=MockProvider(default_output="{}"),
+        tools=tools,
+        config=RunConfig(
+            artifacts_dir=tmp_path / ".runs",
+            provider_name="mock",
+            run_id="failure",
+        ),
+    )
+
+    with pytest.raises(StepExecutionError):
+        runner.run(workflow, inputs={"topic": "Testing"})
+
+    runs_dir = tmp_path / ".runs"
+    run_dirs = [path for path in runs_dir.iterdir() if path.is_dir()]
+    assert len(run_dirs) == 1
+    run_dir = run_dirs[0]
+    assert (run_dir / "error.json").exists()
+    assert (run_dir / "steps" / "echo" / "error.json").exists()

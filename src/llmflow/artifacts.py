@@ -123,6 +123,25 @@ class ArtifactsWriter:
         step_path = self._ensure_step_dir(step_id)
         _write_json(step_path / "llm_call.json", payload)
 
+    def write_error(
+        self,
+        *,
+        step_id: str | None,
+        error_type: str,
+        message: str,
+        stage: str,
+    ) -> None:
+        payload = {
+            "step_id": step_id,
+            "error_type": error_type,
+            "message": message,
+            "stage": stage,
+        }
+        _write_json(self._run_dir / "error.json", payload)
+        if step_id is not None:
+            step_path = self._ensure_step_dir(step_id)
+            _write_json(step_path / "error.json", payload)
+
     def finalize(self, *, ended_at: datetime | None = None) -> dict[str, Any]:
         end_time = ended_at or _utc_now()
         metadata = RunMetadata(

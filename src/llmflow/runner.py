@@ -45,7 +45,6 @@ class Runner:
         self._steps = steps or _default_step_registry()
 
     def run(self, workflow: Workflow, inputs: dict[str, Any]) -> RunResult:
-        _validate_inputs(workflow, inputs)
         graph = workflow.graph()
         step_defs = {step.id: step for step in workflow.spec.steps}
 
@@ -59,18 +58,48 @@ class Runner:
         writer.write_inputs(inputs)
 
         step_outputs: dict[str, dict[str, Any]] = {}
-        for step_id in graph.order:
-            definition = step_defs[step_id]
-            step = self._create_step(definition)
-            step_inputs = _build_step_inputs(inputs, step_outputs, definition.depends_on)
-            output = step.execute(step_inputs)
-            writer.write_step_output(step_id, output)
-            step_outputs[step_id] = output
+        error_written = False
+        try:
+            _validate_inputs(workflow, inputs)
+            for step_id in graph.order:
+                definition = step_defs[step_id]
+                step = self._create_step(definition)
+                step_inputs = _build_step_inputs(
+                    inputs, step_outputs, definition.depends_on
+                )
+                try:
+                    output = step.execute(step_inputs)
+                except Exception as exc:
+                    writer.write_error(
+                        step_id=step_id,
+                        error_type=exc.__class__.__name__,
+                        message=str(exc),
+                        stage="step",
+                    )
+                    writer.finalize()
+                    error_written = True
+                    raise
+                writer.write_step_output(step_id, output)
+                step_outputs[step_id] = output
 
-        outputs = _resolve_outputs(workflow, step_outputs)
-        writer.write_outputs(outputs)
-        metadata = writer.finalize()
-        return RunResult(outputs=outputs, run_dir=writer.run_dir, metadata=metadata)
+            outputs = _resolve_outputs(workflow, step_outputs)
+            writer.write_outputs(outputs)
+            metadata = writer.finalize()
+            return RunResult(
+                outputs=outputs,
+                run_dir=writer.run_dir,
+                metadata=metadata,
+            )
+        except Exception as exc:
+            if not error_written:
+                writer.write_error(
+                    step_id=None,
+                    error_type=exc.__class__.__name__,
+                    message=str(exc),
+                    stage="workflow",
+                )
+                writer.finalize()
+            raise
 
     def _create_step(self, definition: StepDef) -> Any:
         if definition.type == "llm":
