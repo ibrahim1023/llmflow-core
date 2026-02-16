@@ -96,3 +96,7 @@ class ArtifactsError(Exception):
 
 class ArtifactsWriteError(ArtifactsError):
     """Raised when artifacts cannot be written to disk."""
+
+
+class ReplayError(Exception):
+    """Raised when replay fails or artifacts are inconsistent."""

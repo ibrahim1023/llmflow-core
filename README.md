@@ -24,6 +24,16 @@ result = runner.run(workflow, inputs={"topic": "Deterministic AI", "audience": "
 print(result.outputs)
 ```
 
+## Replay
+Replay verifies recorded outputs without re-running providers:
+
+```python
+from llmflow import replay
+
+result = replay(".runs/run_YYYYMMDD_HHMMSS_<shortid>")
+print(result.outputs)
+```
+
 ## Example workflow (placeholder)
 This section will show a minimal YAML workflow, prompt files, and schema.
 

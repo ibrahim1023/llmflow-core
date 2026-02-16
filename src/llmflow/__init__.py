@@ -9,6 +9,7 @@ from .providers import (
     ProviderResponse,
     ProviderUsage,
 )
+from .replay import replay
 from .registry import StepRegistry, ToolRegistry, ValidatorRegistry
 from .runner import RunConfig, RunResult, Runner
 from .steps import LLMStep, Step
@@ -29,6 +30,7 @@ __all__ = [
     "RunConfig",
     "RunResult",
     "Runner",
+    "replay",
     "LLMStep",
     "Step",
     "StepDef",
