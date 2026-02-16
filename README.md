@@ -335,8 +335,7 @@ Release process:
 
 Package pages:
 
-- PyPI: `https://pypi.org/project/llmflow-core/`
-- TestPyPI: `https://test.pypi.org/project/llmflow-core/`
+- [PyPI](https://pypi.org/project/llmflow-core/)
 
 ## Current status
 
