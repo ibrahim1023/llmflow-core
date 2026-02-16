@@ -178,15 +178,28 @@ Run all tests:
 pytest
 ```
 
+Run tests with coverage for core modules:
+
+```bash
+pytest --cov=llmflow --cov-report=term-missing
+```
+
 Determinism and replay checks:
 
 ```bash
 pytest tests/test_replay.py tests/test_examples_blog_pipeline.py
 ```
 
+Run a local command equivalent to CI:
+
+```bash
+python -m pip install -e .[dev]
+pytest --cov=llmflow --cov-report=term-missing
+```
+
 ## Current status
 
-Implemented through Phase 10:
+Implemented through Phase 11:
 
 - Core workflow loading and validation
 - Graph ordering and cycle detection
@@ -195,3 +208,4 @@ Implemented through Phase 10:
 - Runner and replay
 - CLI (`run`, `graph`, `replay`)
 - Example workflow (`examples/blog_pipeline`)
+- CI workflow and coverage command (`pytest --cov=llmflow`)
