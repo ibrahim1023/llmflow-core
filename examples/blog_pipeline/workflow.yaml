@@ -1,0 +1,39 @@
+workflow:
+  name: blog_post_pipeline
+  version: "1.0"
+
+inputs:
+  topic:
+    type: string
+  audience:
+    type: string
+
+steps:
+  - id: outline
+    type: llm
+    prompt: prompts/outline.md
+    output_schema: schemas/outline.json
+    llm:
+      model: mock-model
+      temperature: 0
+
+  - id: critique
+    type: llm
+    depends_on: [outline]
+    prompt: prompts/critique.md
+    output_schema: schemas/critique.json
+    llm:
+      model: mock-model
+      temperature: 0
+
+  - id: revise
+    type: llm
+    depends_on: [critique]
+    prompt: prompts/revise.md
+    output_schema: schemas/final_article.json
+    llm:
+      model: mock-model
+      temperature: 0
+
+outputs:
+  article: revise

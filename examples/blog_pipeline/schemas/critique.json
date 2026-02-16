@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["strengths", "weaknesses", "revision_goals"],
+  "additionalProperties": false,
+  "properties": {
+    "strengths": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1
+    },
+    "weaknesses": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1
+    },
+    "revision_goals": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1
+    }
+  }
+}

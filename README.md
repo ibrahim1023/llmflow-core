@@ -41,6 +41,9 @@ print(result.outputs)
 ## CLI
 The CLI is a thin wrapper around the library API. It uses the deterministic
 mock provider and requires a JSON object for LLM outputs.
+`--mock-output` (or `--mock-output-file`) is applied to every LLM step in the
+run, so workflows with different per-step schemas should use a payload that
+passes all schema checks.
 
 ```bash
 llmflow run examples/blog_pipeline/workflow.yaml \
@@ -52,8 +55,55 @@ llmflow graph examples/blog_pipeline/workflow.yaml
 llmflow replay .runs/run_YYYYMMDD_HHMMSS_<shortid>
 ```
 
-## Example workflow (placeholder)
-This section will show a minimal YAML workflow, prompt files, and schema.
+## Example workflow
+The repository includes `examples/blog_pipeline`:
+
+- `workflow.yaml`: 3-step LLM DAG (`outline -> critique -> revise`)
+- `prompts/`: step prompt templates
+- `schemas/`: per-step output schemas
+- `tools.py`: placeholder for future tool steps
+
+Run it via the Python API with deterministic per-step mock responses:
+
+```python
+import json
+
+from llmflow import MockProvider, RunConfig, Runner, Workflow
+
+workflow = Workflow.load("examples/blog_pipeline/workflow.yaml")
+
+provider = MockProvider(
+    responses={
+        "prompt:<rendered outline prompt>": json.dumps(
+            {"title": "Deterministic AI workflows", "sections": ["A", "B", "C"]}
+        ),
+        "prompt:<rendered critique prompt>": json.dumps(
+            {
+                "strengths": ["Clear structure"],
+                "weaknesses": ["Needs concrete examples"],
+                "revision_goals": ["Add failure semantics"],
+            }
+        ),
+        "prompt:<rendered revise prompt>": json.dumps(
+            {
+                "title": "Deterministic AI workflows",
+                "summary": "Practical guide",
+                "body": "Full article body",
+            }
+        ),
+    }
+)
+
+runner = Runner(
+    provider=provider,
+    config=RunConfig(artifacts_dir=".runs", provider_name="mock"),
+)
+result = runner.run(
+    workflow,
+    inputs={"topic": "Deterministic AI", "audience": "Engineering managers"},
+)
+print(result.outputs["article"])
+```
 
 ## Artifacts layout
 Each run writes a timestamped folder under `.runs/`:
