@@ -88,3 +88,11 @@ class ValidatorNotFoundError(ValidatorError):
 
 class ValidationRuleError(StepExecutionError):
     """Raised when a validation rule fails."""
+
+
+class ArtifactsError(Exception):
+    """Base error for artifacts writing and metadata generation."""
+
+
+class ArtifactsWriteError(ArtifactsError):
+    """Raised when artifacts cannot be written to disk."""

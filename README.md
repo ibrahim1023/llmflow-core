@@ -21,8 +21,31 @@ print(workflow.spec.workflow.name)
 ## Example workflow (placeholder)
 This section will show a minimal YAML workflow, prompt files, and schema.
 
-## Artifacts layout (placeholder)
-This section will document the run directory structure and metadata fields.
+## Artifacts layout
+Each run writes a timestamped folder under `.runs/`:
+
+```
+.runs/
+  run_YYYYMMDD_HHMMSS_<shortid>/
+    metadata.json
+    inputs.json
+    outputs.json
+    steps/
+      <step_id>/
+        output.json
+        rendered_prompt.md
+        llm_call.json
+    logs.txt
+```
+
+`metadata.json` includes:
+- `artifacts_version`
+- engine version
+- workflow name, version, and hash
+- provider name
+- execution order
+- prompt hashes and step output hashes
+- start/end timestamps
 
 ## Extension points (placeholder)
 This section will document providers, tools, and validators.
