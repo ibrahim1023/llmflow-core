@@ -38,7 +38,8 @@ Install with test dependencies:
 python -m pip install -e .[dev]
 ```
 
-## Quickstart (Python API)
+## Quickstart
+### 1) Run with Python API
 
 ```python
 from llmflow import MockProvider, RunConfig, Runner, Workflow
@@ -64,6 +65,22 @@ Note:
 - `MockProvider(default_output=...)` returns the same JSON for every LLM step.
 - If your workflow has different per-step schemas, use per-prompt mock responses
   (see Example Workflow below).
+
+### 2) Run with CLI
+
+```bash
+llmflow run examples/blog_pipeline/workflow.yaml \
+  --input topic="Deterministic AI" \
+  --input audience="Engineering managers" \
+  --mock-output '{"title":"Draft","summary":"S","body":"B"}'
+```
+
+### 3) Inspect and replay
+
+```bash
+llmflow graph examples/blog_pipeline/workflow.yaml
+llmflow replay .runs/run_YYYYMMDD_HHMMSS_<shortid>
+```
 
 ## CLI
 
@@ -111,6 +128,50 @@ Contents:
 The end-to-end deterministic example run is validated by:
 
 - `tests/test_examples_blog_pipeline.py`
+
+## Workflow YAML format
+Minimal shape:
+
+```yaml
+workflow:
+  name: blog_post_pipeline
+  version: "1.0"
+
+inputs:
+  topic:
+    type: string
+  audience:
+    type: string
+
+steps:
+  - id: outline
+    type: llm
+    prompt: prompts/outline.md
+    output_schema: schemas/outline.json
+    llm:
+      model: mock-model
+      temperature: 0
+
+  - id: critique
+    type: llm
+    depends_on: [outline]
+    prompt: prompts/critique.md
+    output_schema: schemas/critique.json
+    llm:
+      model: mock-model
+      temperature: 0
+
+outputs:
+  article: critique
+```
+
+Rules:
+- `workflow.name` and `workflow.version` are required.
+- `inputs` is a mapping of input names to type declarations.
+- Each step needs a unique `id` and `type`.
+- `depends_on` must reference existing step ids.
+- `outputs` maps final output names to step ids.
+- For `llm` steps, `prompt`, `output_schema`, and `llm.model` are required.
 
 ## Replay
 
@@ -160,6 +221,12 @@ Each run writes a folder under `.runs/`:
 - execution order
 - prompt hashes and step output hashes
 - timestamps
+
+Typical step artifacts:
+
+- `steps/<step_id>/output.json`: Validated step output payload
+- `steps/<step_id>/rendered_prompt.md`: Rendered prompt text for LLM steps
+- `steps/<step_id>/llm_call.json`: Provider request/response metadata for LLM steps
 
 ## Extending the engine
 
